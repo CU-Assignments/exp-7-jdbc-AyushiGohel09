@@ -1,0 +1,66 @@
+sql commands:
+CREATE DATABASE company_db;
+
+USE company_db;
+
+CREATE TABLE Employee (
+    EmpID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(50) NOT NULL,
+    Salary DECIMAL(10,2) NOT NULL
+);
+
+INSERT INTO Employee (Name, Salary) VALUES ('Alice', 50000), ('Bob', 60000), ('Charlie', 70000);
+
+code:
+import java.sql.*;
+
+public class EmployeeFetcher {
+    public static void main(String[] args) {
+        // Database credentials
+        String url = "jdbc:mysql://localhost:3306/company_db";
+        String user = "root"; // Change if needed
+        String password = ""; // Change if needed
+
+        // JDBC objects
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            // Load MySQL JDBC Driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // Establish Connection
+            conn = DriverManager.getConnection(url, user, password);
+
+            // Create Statement
+            stmt = conn.createStatement();
+
+            // Execute Query
+            String query = "SELECT * FROM Employee";
+            rs = stmt.executeQuery(query);
+
+            // Display Results
+            System.out.println("Employee Records:");
+            System.out.println("-------------------------------");
+            while (rs.next()) {
+                int id = rs.getInt("EmpID");
+                String name = rs.getString("Name");
+                double salary = rs.getDouble("Salary");
+                System.out.println("EmpID: " + id + ", Name: " + name + ", Salary: " + salary);
+            }
+
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Close resources
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
